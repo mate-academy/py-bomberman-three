@@ -215,7 +215,6 @@ class Enemy(EngineMovingSprite):
         self.height = height
         self.engine.add_to_group(self, "enemies")
         self.surf = pygame.Surface((width, height))
-        self.surf.fill((0, 255, 128))
         self.position = self.generate_position()
         self.rect = self.surf.get_rect(center=self.position[:2])
         self.speed = 2
