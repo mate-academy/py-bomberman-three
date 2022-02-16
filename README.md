@@ -16,12 +16,12 @@ Now you have to implement such features:
 small chance for a random effect to be dropped. Effect changes the
 characteristics of the player if the player picks it up. Create a few types
 of effects, for example:
-    1. Effect that heals the player for 20 health points.
-    2. Effect that slows player for the two speed points.
-    3. Effect that accelerates player for the two speed points.
+   - Effect, that heals the player for 20 health points.
+   - Effect, that slows player for the two speed points.
+   - Effect, that accelerates player for the two speed points.
 
 It all depends on your imagination. Implement that enemies and effects logic
-as you want.
+as you want. 
 
 Example: 
 
