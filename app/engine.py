@@ -55,7 +55,7 @@ class Engine:
         self.all_sprites.add(sprite)
 
     def groups_update(self):
-        groups = [entity for entity in self.groups.values()]
+        groups = list(self.groups.values())
         for group in groups:
             group.update()
 
