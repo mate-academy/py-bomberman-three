@@ -4,8 +4,8 @@
 - [Pygame primer](https://realpython.com/pygame-a-primer/#sprite-groups)
 - [Pygame sprites and groups](https://kidscancode.org/blog/2016/08/pygame_1-2_working-with-sprites/)
 
-You already have spider enemies that chase the player, 
-bombs that can explode.
+You already have spiders, that chase the player, 
+bombs, that can explode.
 Now you have to implement such features:
 1. Create an Enemy class hierarchy and add other types of enemies, for example:
    - Boar, that can drop rocks. All units cannot walk over the rocks, but
@@ -20,8 +20,18 @@ of effects, for example:
    - Effect, that slows player for the two speed points.
    - Effect, that accelerates player for the two speed points.
 
-It all depends on your imagination. Implement that enemies and effects logic
-as you want. 
+It is the final stage of this project, be free to implement everything
+that you want. 
+- You can change existing logic, add more information
+to the interface, add additional properties to the player and enemies
+and manipulate with them, add an event to generate allies, that try
+to help you overcome the enemies, add bombs, that can destroy walls,
+add an effect that makes walls 
+disappear for a few seconds (difficult one), etc. 
+
+Use free 2D images
+[Source 1](https://opengameart.org/), [Source 2](https://craftpix.net/).
+It all depends on your imagination.
 
 Example: 
 
