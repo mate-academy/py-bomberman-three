@@ -11,10 +11,10 @@ class EngineMixin:
 
 class MovingMixin:
     def move_collision_out(self, x_speed, y_speed):
-        on_bomb = self.on_bomb if hasattr(self, "on_bomb") else False
-        if (
-            pygame.sprite.spritecollideany(self, self.engine.groups["walls"])
-            or pygame.sprite.spritecollideany(self, self.engine.groups["bombs"])
-            and not on_bomb
-        ):
+        is_on_bomb = self.is_on_bomb if hasattr(self, "is_on_bomb") else False
+        if pygame.sprite.spritecollideany(
+            self, self.engine.groups["walls"]
+        ) or pygame.sprite.spritecollideany(
+            self, self.engine.groups["bombs"]
+        ) and not is_on_bomb:
             self.rect.move_ip(-x_speed, -y_speed)

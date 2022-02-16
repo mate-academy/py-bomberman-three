@@ -8,22 +8,27 @@ from pygame.locals import (
     QUIT,
 )
 
+from config import SCREEN_WIDTH
 
-class SingletonMeta(type):
+
+def singleton(class_):
     _instances = {}
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
+    def get_instance(*args, **kwargs):
+        if class_ not in _instances:
+            _instances[class_] = class_(*args, **kwargs)
+        return _instances[class_]
+    return get_instance
 
 
-class Engine(metaclass=SingletonMeta):
+@singleton
+class Engine:
     def __init__(self, screen, clock):
         self.running = True
         self.screen = screen
         self.clock = clock
+
+        self.score = 0
 
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
@@ -57,3 +62,19 @@ class Engine(metaclass=SingletonMeta):
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+    def draw_interface(self):
+        font = pygame.font.SysFont("comicsans", 15, True)
+        text = font.render("Score: " + str(self.score), True, (255, 0, 0))
+        self.screen.blit(text, (10, 10))
+
+        player = self.groups["player"].sprites()[0]
+        text_health = font.render("Health: " + str(player.get_health()),
+                                  True, (0, 255, 0))
+        text_speed = font.render("Speed: " + str(player.get_speed()),
+                                 True, (0, 255, 0))
+
+        self.screen.blit(text_health,
+                         (SCREEN_WIDTH - text_health.get_width() - 10, 10))
+        self.screen.blit(text_speed,
+                         (SCREEN_WIDTH - text_speed.get_width() - 10, 30))
