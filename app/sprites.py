@@ -146,17 +146,24 @@ class Bomb(EngineSprite):
         super().__init__()
         self.engine.add_to_group(self, "bombs")
         self.surf = pygame.image.load("images/bomb.png").convert_alpha()
-        self.rect = self.surf.get_rect(center=owner_center)
-        self.rect.center = self.get_self_center()
         self.lifetime = BOMB_TIMER
         self.explode_range = BOMB_EXPLODE_RANGE
-
-    def get_self_center(self):
-        lines = self.get_line_bomb_placed()
-        return (
-            lines[0] * DEFAULT_OBJ_SIZE + self.rect.width // 2,
-            lines[1] * DEFAULT_OBJ_SIZE + self.rect.height // 2,
+        self.rect = self.surf.get_rect(
+            center=self.get_self_center(owner_center)
         )
+
+    def get_self_center(self, owner_center):
+        lines = self.get_line_bomb_placed(owner_center)
+        return (
+            lines[0] * DEFAULT_OBJ_SIZE + self.surf.get_width() // 2,
+            lines[1] * DEFAULT_OBJ_SIZE + self.surf.get_height() // 2,
+        )
+
+    @staticmethod
+    def get_line_bomb_placed(owner_center):
+        width = owner_center[0] // DEFAULT_OBJ_SIZE
+        height = owner_center[1] // DEFAULT_OBJ_SIZE
+        return width, height
 
     def update(self):
         self.lifetime -= 1
@@ -206,11 +213,6 @@ class Bomb(EngineSprite):
         sprite.surf = pygame.Surface((1, 1))
         sprite.rect = sprite.surf.get_rect(center=center_pos)
         return sprite
-
-    def get_line_bomb_placed(self):
-        width = self.rect.centerx // DEFAULT_OBJ_SIZE
-        height = self.rect.centery // DEFAULT_OBJ_SIZE
-        return width, height
 
 
 class Fire(EngineSprite):
