@@ -29,6 +29,7 @@ class Player(EngineMovingSprite):
     def __init__(self):
         super(Player, self).__init__()
         self.engine.add_to_group(self, "player")
+        self.engine.add_to_group(self, "flammable")
         self.surf = pygame.image.load(
             "images/player_front.png"
         ).convert_alpha()
@@ -42,10 +43,6 @@ class Player(EngineMovingSprite):
         pressed_keys = pygame.key.get_pressed()
         if self.health <= 0:
             self.kill()
-
-        if pygame.sprite.spritecollideany(self, self.engine.groups["fires"]):
-            self.kill()
-            self.engine.running = False
 
         if self.plant_bomb_cooldown:
             self.plant_bomb_cooldown -= 1
@@ -110,6 +107,10 @@ class Player(EngineMovingSprite):
 
     def get_speed(self):
         return self.speed
+
+    def kill(self) -> None:
+        super().kill()
+        self.engine.running = False
 
 
 class Wall(EngineSprite):
@@ -207,13 +208,6 @@ class Bomb(EngineSprite):
                 return True
         return False
 
-    @staticmethod
-    def create_test_sprite(center_pos: tuple):
-        sprite = pygame.sprite.Sprite()
-        sprite.surf = pygame.Surface((1, 1))
-        sprite.rect = sprite.surf.get_rect(center=center_pos)
-        return sprite
-
 
 class Fire(EngineSprite):
     def __init__(self, center_pos: tuple):
@@ -227,6 +221,7 @@ class Fire(EngineSprite):
 
     def update(self):
         self.lifetime -= 1
+
         if self.lifetime < 0:
             self.kill()
         elif self.lifetime < 3:
@@ -238,13 +233,19 @@ class Fire(EngineSprite):
                 "images/explosion_2.png"
             ).convert_alpha()
 
+        # kill all flammable units that touch the fire
+        flamed = pygame.sprite.spritecollideany(
+            self, self.engine.groups["flammable"]
+        )
+        if flamed:
+            flamed.kill()
+
 
 class Enemy(EngineMovingSprite):
-    def __init__(self, width=45, height=45):
+    def __init__(self):
         super().__init__()
-        self.width = width
-        self.height = height
         self.engine.add_to_group(self, "enemies")
+        self.engine.add_to_group(self, "flammable")
         self.speed = 2
         self.image_front = pygame.image.load(
             "images/spider_front.png"
@@ -271,8 +272,6 @@ class Enemy(EngineMovingSprite):
         player = self.engine.groups["player"].sprites()[0]
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             player.change_health(-10)
-            self.kill()
-        if pygame.sprite.spritecollideany(self, self.engine.groups["fires"]):
             self.kill()
 
     def move(self):
