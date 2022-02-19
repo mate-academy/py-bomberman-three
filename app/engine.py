@@ -27,6 +27,7 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
+        self.player = None
 
         self.score = 0
 
@@ -68,7 +69,7 @@ class Engine:
         text = font.render("Score: " + str(self.score), True, (255, 0, 0))
         self.screen.blit(text, (10, 10))
 
-        player = self.groups["player"].sprites()[0]
+        player = self.player
         text_health = font.render("Health: " + str(player.get_health()),
                                   True, (0, 255, 0))
         text_speed = font.render("Speed: " + str(player.get_speed()),
