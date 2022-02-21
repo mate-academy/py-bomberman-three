@@ -15,6 +15,8 @@ class MovingMixin:
         if pygame.sprite.spritecollideany(
             self, self.engine.groups["walls"]
         ) or pygame.sprite.spritecollideany(
+            self, self.engine.groups["rocks"]
+        ) or pygame.sprite.spritecollideany(
             self, self.engine.groups["bombs"]
         ) and not is_on_bomb:
             self.rect.move_ip(-x_speed, -y_speed)
