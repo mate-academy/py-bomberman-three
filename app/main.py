@@ -23,16 +23,21 @@ player = Player()
 Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
                     (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
 
-add_enemy = AddEnemy(1000)
+add_enemy = AddEnemy(2000)
 engine.add_event(add_enemy)
 
 engine.running = True
+
+pygame.mixer.music.load("sounds/BossMain.wav")
+pygame.mixer.music.play(loops=-1)
 
 while engine.running:
     engine.events_handling()
 
     # Update all groups
     engine.groups_update()
+    if not engine.running:
+        break
 
     engine.screen.fill(BACKGROUND_COLOR)
 
@@ -44,4 +49,7 @@ while engine.running:
     pygame.display.flip()
     engine.clock.tick(FRAMES_PER_SECOND)
 
+print("GAME OVER")
+pygame.mixer.music.stop()
+pygame.mixer.quit()
 pygame.quit()
