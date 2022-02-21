@@ -11,7 +11,6 @@ from config import (
     BACKGROUND_COLOR
 )
 
-
 pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -23,8 +22,11 @@ player = Player()
 Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
                     (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
 
-add_enemy = AddEnemy(1000)
+add_enemy = AddEnemy(2000)
+
 engine.add_event(add_enemy)
+
+engine.player = player
 
 engine.running = True
 
