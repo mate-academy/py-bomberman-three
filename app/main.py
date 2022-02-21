@@ -25,6 +25,7 @@ Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
 
 add_enemy = AddEnemy(1000)
 engine.add_event(add_enemy)
+engine.add_event(add_enemy)
 
 engine.running = True
 
