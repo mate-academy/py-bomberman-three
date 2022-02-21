@@ -35,7 +35,7 @@ class Enemy(ABC, EngineMovingSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "enemies")
-        self.engine.add_to_group(self, "flammable")
+        self.engine.add_to_group(self, "____flammable")
         self.speed = DEFAULT_ENEMY_SPEED
         self.score_points = DEFAULT_SCORE_POINT
 
@@ -85,7 +85,7 @@ class Enemy(ABC, EngineMovingSprite):
 class Effect(ABC, EngineMovingSprite):
     def __init__(self):
         super().__init__()
-        self.engine.add_to_group(self, "flammable")
+        self.engine.add_to_group(self, "____flammable")
         self.engine.add_to_group(self, "effects")
         self.time_life = TIMER_EFFECT
 
@@ -134,7 +134,7 @@ class Player(EngineMovingSprite):
     def __init__(self):
         super(Player, self).__init__()
         self.engine.add_to_group(self, "player")
-        self.engine.add_to_group(self, "flammable")
+        self.engine.add_to_group(self, "__flammable")
         self.surf = pygame.image.load(
             "images/player_front.png"
         ).convert_alpha()
@@ -338,9 +338,9 @@ class Fire(EngineSprite):
                 "images/explosion_2.png"
             ).convert_alpha()
 
-        # kill all flammable units that touch the fire
+        # kill all __flammable units that touch the fire
         flamed = pygame.sprite.spritecollideany(
-            self, self.engine.groups["flammable"]
+            self, self.engine.groups["__flammable"]
         )
         if flamed:
             flamed.kill()
@@ -350,7 +350,7 @@ class Rock(EngineSprite):
     def __init__(self, owner_center):
         super().__init__()
         self.engine.add_to_group(self, "rocks")
-        self.engine.add_to_group(self, "flammable")
+        self.engine.add_to_group(self, "__flammable")
         self.surf = pygame.image.load("images/rock.png").convert_alpha()
         self.rect = self.surf.get_rect(
             center=self.get_self_center(owner_center)

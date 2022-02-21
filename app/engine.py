@@ -56,7 +56,7 @@ class Engine:
         self.all_sprites.add(sprite)
 
     def groups_update(self):
-        groups = list(self.groups.values())
+        groups = [v for k, v in self.groups.items() if not k.startswith("__")]
         for group in groups:
             group.update()
 
