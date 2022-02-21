@@ -1,7 +1,9 @@
 import pygame
 import abc
+from random import choice
 
-from sprites import Enemy
+
+from sprites import BoarEnemy, BirdEnemy, SpiderEnemy
 
 from mixins import EngineMixin
 
@@ -26,4 +28,5 @@ class AddEnemy(Event):
         self.engine.add_event(self)
 
     def action(self):
-        Enemy()
+        enemies = [BirdEnemy, BoarEnemy, SpiderEnemy]
+        choice(enemies).generate_instance()
