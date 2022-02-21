@@ -1,13 +1,10 @@
 import pygame
-
 from collections import defaultdict
-
 from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
     QUIT,
 )
-
 from config import SCREEN_WIDTH
 
 
