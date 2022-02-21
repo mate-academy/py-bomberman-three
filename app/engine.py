@@ -18,6 +18,7 @@ def singleton(class_):
         if class_ not in _instances:
             _instances[class_] = class_(*args, **kwargs)
         return _instances[class_]
+
     return get_instance
 
 
@@ -29,6 +30,7 @@ class Engine:
         self.clock = clock
         self.player = None
 
+        self.hide_walls = False
         self.score = 0
 
         self.groups = defaultdict(pygame.sprite.Group)
@@ -61,8 +63,13 @@ class Engine:
             group.update()
 
     def draw_all_sprites(self):
-        for sprite in self.all_sprites:
-            self.screen.blit(sprite.surf, sprite.rect)
+        if self.hide_walls:
+            for sprite in self.all_sprites:
+                if sprite not in self.groups["walls"]:
+                    self.screen.blit(sprite.surf, sprite.rect)
+        else:
+            for sprite in self.all_sprites:
+                self.screen.blit(sprite.surf, sprite.rect)
 
     def draw_interface(self):
         font = pygame.font.SysFont("comicsans", 15, True)

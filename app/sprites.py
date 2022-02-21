@@ -371,25 +371,31 @@ class Rock(EngineSprite):
 
 
 class CreateEnemy(ABC):
-    enemies = {}
+    enemies = []
 
     @classmethod
     def add_enemy(cls, cls_):
         if cls_ not in cls.enemies:
-            cls.enemies.update({cls_.__name__: cls_})
+            cls.enemies.append(cls_)
 
     @classmethod
     def spawn_random_enemy(cls):
-        chance = random.randint(1, 10)
-        advanced_enemy = ("Bird", "Boar")
-        if chance >= 9:
-            cls.enemies[random.choice(advanced_enemy)]()
-        else:
-            cls.enemies["Spider"]()
+        spawn_weight_spider = cls.enemies[0].spawn_weight
+        spawn_weight_bird = cls.enemies[1].spawn_weight
+        spawn_weight_boar = cls.enemies[2].spawn_weight
+        random.choices(
+            cls.enemies,
+            weights=[
+                spawn_weight_spider,
+                spawn_weight_bird,
+                spawn_weight_boar
+            ])[0]()
 
 
 @CreateEnemy.add_enemy
 class Spider(Enemy):
+    spawn_weight = 5
+
     def __init__(self):
         super().__init__()
         self.image_front = pygame.image.load(
@@ -440,6 +446,8 @@ class Spider(Enemy):
 
 @CreateEnemy.add_enemy
 class Bird(Enemy):
+    spawn_weight = 2
+
     def __init__(self):
         super().__init__()
         self.image_left = pygame.image.load(
@@ -497,6 +505,8 @@ class Bird(Enemy):
 
 @CreateEnemy.add_enemy
 class Boar(Enemy):
+    spawn_weight = 3
+
     def __init__(self):
         super().__init__()
         self.image_front = pygame.image.load(
@@ -572,21 +582,34 @@ class Boar(Enemy):
 
 
 class CreateEffect(ABC):
-    enemies = {}
+    effects = []
 
     @classmethod
     def add_effect(cls, cls_):
-        if cls_ not in cls.enemies:
-            cls.enemies.update({cls_.__name__: cls_})
+        if cls_ not in cls.effects:
+            cls.effects.append(cls_)
 
     @classmethod
     def spawn_random_effect(cls):
-        all_effects = ("Heal", "Fast", "Slow")
-        cls.enemies[random.choice(all_effects)]()
+        print()
+        spawn_weight_heal = cls.effects[0].spawn_weight
+        spawn_weight_slow = cls.effects[1].spawn_weight
+        spawn_weight_fast = cls.effects[2].spawn_weight
+        spawn_weight_remove_walls = cls.effects[3].spawn_weight
+        random.choices(
+            cls.effects,
+            weights=[
+                spawn_weight_heal,
+                spawn_weight_slow,
+                spawn_weight_fast,
+                spawn_weight_remove_walls
+            ])[0]()
 
 
 @CreateEffect.add_effect
 class Heal(Effect):
+    spawn_weight = 5
+
     def __init__(self):
         super().__init__()
         self.surf = pygame.image.load(
@@ -601,6 +624,8 @@ class Heal(Effect):
 
 @CreateEffect.add_effect
 class Slow(Effect):
+    spawn_weight = 5
+
     def __init__(self):
         super().__init__()
         self.surf = pygame.image.load(
@@ -615,6 +640,8 @@ class Slow(Effect):
 
 @CreateEffect.add_effect
 class Fast(Effect):
+    spawn_weight = 5
+
     def __init__(self):
         super().__init__()
         self.surf = pygame.image.load(
@@ -625,3 +652,29 @@ class Fast(Effect):
     def set_effect(self):
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             self.engine.player.speed += 1
+
+
+@CreateEffect.add_effect
+class RemoveWalls(Effect):
+    """Effect invisible walls"""
+    spawn_weight = 1
+
+    def __init__(self):
+        super().__init__()
+        self.surf = pygame.image.load(
+            "images/wall_effect.png"
+        ).convert_alpha()
+        self.lifetime = 10
+        self.rect = self.surf.get_rect(center=super().generate_position())
+
+    def update(self):
+        super().update()
+        self.lifetime -= 1
+        if self.lifetime == 0:
+            self.spawn_weight = 1
+            self.engine.hide_walls = False
+
+    def set_effect(self):
+        if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
+            self.engine.hide_walls = True
+            self.spawn_weight = 0

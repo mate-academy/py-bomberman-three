@@ -34,7 +34,7 @@ class AddEffect(Event):
     def __init__(self, ms_timeout=DEFAULT_EFFECT_TIMEOUT):
         super().__init__(ms_timeout)
 
-        self.event_no = pygame.USEREVENT + 2
+        self.event_no = pygame.USEREVENT + 1
         pygame.USEREVENT = self.event_no
         pygame.time.set_timer(self.event_no, self.ms_timeout)
         self.engine.add_event(self)
