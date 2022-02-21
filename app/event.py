@@ -1,7 +1,9 @@
+import random
+
 import pygame
 import abc
 
-from sprites import Enemy
+from sprites import Enemy, Boar, Bird
 
 from mixins import EngineMixin
 
@@ -17,7 +19,7 @@ class Event(EngineMixin, abc.ABC):
 
 
 class AddEnemy(Event):
-    def __init__(self, ms_timeout=1000):
+    def __init__(self, ms_timeout=10_000):
         super().__init__(ms_timeout)
 
         self.event_no = pygame.USEREVENT + 1
@@ -26,4 +28,7 @@ class AddEnemy(Event):
         self.engine.add_event(self)
 
     def action(self):
+        option = random.randint(1, 3)
+        if option == 1:
+            random.choice([Bird(), Boar()])
         Enemy()

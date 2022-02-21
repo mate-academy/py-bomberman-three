@@ -65,14 +65,14 @@ class Engine:
 
     def draw_interface(self):
         font = pygame.font.SysFont("comicsans", 15, True)
-        text = font.render("Score: " + str(self.score), True, (255, 0, 0))
+        text = font.render("Score: " + str(self.score), True, (149, 0, 255))
         self.screen.blit(text, (10, 10))
 
         player = self.groups["player"].sprites()[0]
         text_health = font.render("Health: " + str(player.get_health()),
-                                  True, (0, 255, 0))
+                                  True, (76, 169, 115))
         text_speed = font.render("Speed: " + str(player.get_speed()),
-                                 True, (0, 255, 0))
+                                 True, (76, 169, 115))
 
         self.screen.blit(text_health,
                          (SCREEN_WIDTH - text_health.get_width() - 10, 10))
