@@ -370,24 +370,6 @@ class Rock(EngineSprite):
         return width, height
 
 
-# class CreateEnemy(ABC):
-#     enemies = []
-#
-#     @classmethod
-#     def add_enemy(cls, cls_):
-#         def wrapper(*args, **kwargs):
-#             if cls_ not in cls.enemies:
-#                 cls.enemies.append(cls_)
-#
-#         return wrapper
-#
-#     @classmethod
-#     def spawn_random_enemy(cls):
-#         print(cls.enemies)
-#         random.choice(cls.enemies)()
-#
-#
-# @CreateEnemy.add_enemy
 class Spider(Enemy):
     def __init__(self):
         super().__init__()
