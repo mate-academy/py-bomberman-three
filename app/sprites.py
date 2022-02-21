@@ -591,7 +591,6 @@ class CreateEffect(ABC):
 
     @classmethod
     def spawn_random_effect(cls):
-        print()
         spawn_weight_heal = cls.effects[0].spawn_weight
         spawn_weight_slow = cls.effects[1].spawn_weight
         spawn_weight_fast = cls.effects[2].spawn_weight
