@@ -35,9 +35,9 @@ class AddEnemy(Event):
     def choice_enemy():
         chance = random.randint(1, 10)
         common_enemy = "Spider()"
-        advanced_enemy = ["Bird()", "Boar()"]
+        advanced_enemies = ["Bird()", "Boar()"]
         if chance >= 8:
-            return eval(random.choice(advanced_enemy))
+            return eval(random.choice(advanced_enemies))
         else:
             return eval(common_enemy)
 
@@ -56,5 +56,5 @@ class AddEffect(Event):
 
     @staticmethod
     def choice_effect():
-        all_enemy = ["Healing()", "Slow()", "Fast()"]
-        return eval(random.choice(all_enemy))
+        all_effects = ["Healing()", "Slow()", "Fast()"]
+        return eval(random.choice(all_effects))

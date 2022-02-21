@@ -85,7 +85,7 @@ class Enemy(ABC, EngineMovingSprite):
 class Effect(ABC, EngineMovingSprite):
     def __init__(self):
         super().__init__()
-        self.engine.add_to_group(self, "____flammable")
+        self.engine.add_to_group(self, "__flammable")
         self.engine.add_to_group(self, "effects")
         self.time_life = TIMER_EFFECT
 
