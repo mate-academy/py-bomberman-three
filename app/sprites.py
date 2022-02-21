@@ -13,7 +13,10 @@ from config import (
     BOMB_TIMER,
     PLANT_BOMB_COOLDOWN,
     BOMB_EXPLODE_RANGE,
-    FIRE_LIFETIME
+    FIRE_LIFETIME,
+    EXPLOSION_SOUND,
+    COLLISION_SOUND,
+    PLANT_BOMB_SOUND
 )
 
 
@@ -92,6 +95,7 @@ class Player(EngineMovingSprite):
 
         if pressed_keys[K_SPACE]:
             self.place_bomb()
+            PLANT_BOMB_SOUND.play()
 
     def place_bomb(self):
         if not self.plant_bomb_cooldown:
@@ -172,6 +176,7 @@ class Bomb(EngineSprite):
             self.explode()
 
     def explode(self):
+        EXPLOSION_SOUND.play()
         fires = [(self.rect.centerx, self.rect.centery)]
 
         width = self.rect.centerx
@@ -238,6 +243,15 @@ class Fire(EngineSprite):
             self, self.engine.groups["flammable"]
         )
         if flamed:
+            choice_effect = random.choice([
+                "Heal", "Heal", "Heal", "Slow", "Fast"
+            ])
+            if choice_effect == "Heal":
+                Heal(flamed.rect.center)
+            elif choice_effect == "Slow":
+                Slow(flamed.rect.center)
+            elif choice_effect == "Fast":
+                Fast(flamed.rect.center)
             flamed.kill()
 
 
@@ -272,7 +286,9 @@ class Enemy(EngineMovingSprite):
         player = self.engine.groups["player"].sprites()[0]
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             player.change_health(-10)
+            COLLISION_SOUND.play()
             self.kill()
+        pass
 
     def move(self):
         player = self.engine.groups["player"].sprites()[0]
@@ -325,3 +341,213 @@ class Enemy(EngineMovingSprite):
     def kill(self) -> None:
         super().kill()
         self.engine.score += self.score_points
+
+
+class Spider(Enemy):
+    pass
+
+
+class Boar(Enemy):
+    def __init__(self):
+        super().__init__()
+        self.image_front = pygame.image.load(
+            "images/boar_front.png"
+        ).convert_alpha()
+        self.image_back = pygame.image.load(
+            "images/boar_back.png"
+        ).convert_alpha()
+        self.image_left = pygame.image.load(
+            "images/boar_left.png"
+        ).convert_alpha()
+        self.image_right = pygame.image.load(
+            "images/boar_right.png"
+        ).convert_alpha()
+        self.speed = 1
+        self.is_on_rock = False
+
+    def update(self):
+        super().update()
+        self.drop_rock()
+        if not pygame.sprite.spritecollideany(
+                self,
+                self.engine.groups["rocks"]
+        ):
+            self.is_on_rock = False
+
+    def drop_rock(self):
+        to_drop = random.randint(0, 500)
+        if to_drop == 0:
+            Rock(self.rect.center)
+            self.is_on_rock = True
+        pass
+
+
+class Rock(EngineSprite):
+    def __init__(self, owner_center):
+        super().__init__()
+        self.engine.add_to_group(self, "rocks")
+        self.engine.add_to_group(self, "flammable")
+        self.surf = pygame.image.load("images/rock.png").convert_alpha()
+        self.rect = self.surf.get_rect(
+            center=self.get_self_center(owner_center)
+        )
+
+    def get_self_center(self, owner_center):
+        lines = self.get_line_bomb_placed(owner_center)
+        return (
+            lines[0] * DEFAULT_OBJ_SIZE + self.surf.get_width() // 2,
+            lines[1] * DEFAULT_OBJ_SIZE + self.surf.get_height() // 2,
+        )
+
+    @staticmethod
+    def get_line_bomb_placed(owner_center):
+        width = owner_center[0] // DEFAULT_OBJ_SIZE
+        height = owner_center[1] // DEFAULT_OBJ_SIZE
+        return width, height
+
+
+class Bird(Enemy):
+
+    def __init__(self):
+        super().__init__()
+        self.image_left = pygame.image.load(
+            "images/bird_left.png"
+        ).convert_alpha()
+        self.image_right = pygame.image.load(
+            "images/bird_right.png"
+        ).convert_alpha()
+        self.surf = self.image_left
+        self.speed = 2
+        self.position = self.generate_position()
+        self.rect = self.surf.get_rect(center=self.position[:2])
+
+    @staticmethod
+    def generate_position() -> tuple:
+        direction = random.choice(["1", "2", "3", "4"])
+        if direction == "1":
+            width = 0
+            height = 0
+
+        if direction == "2":
+            width = SCREEN_WIDTH
+            height = 0
+
+        if direction == "3":
+            width = SCREEN_WIDTH
+            height = SCREEN_HEIGHT
+
+        if direction == "4":
+            width = 0
+            height = SCREEN_HEIGHT
+
+        return width, height, direction
+
+    def update(self):
+        super().update()
+        self.drop_bomb()
+
+        if self.rect.x < -50 or self.rect.y > SCREEN_HEIGHT + 50 \
+                or self.rect.x > SCREEN_WIDTH + 50 \
+                or self.rect.y < -50:
+            self.kill()
+
+    def drop_bomb(self):
+        to_drop = random.randint(0, 100)
+        if to_drop == 0:
+            if not pygame.sprite.spritecollideany(
+                self, self.engine.groups["walls"]
+            ):
+                Bomb(self.rect.center)
+
+    def move(self):
+        if self.position[-1] == "1":
+            self.rect.move_ip(self.speed, self.speed)
+            self.surf = self.image_right
+        if self.position[-1] == "2":
+            self.rect.move_ip(-self.speed, self.speed)
+            self.surf = self.image_left
+        if self.position[-1] == "3":
+            self.rect.move_ip(-self.speed, -self.speed)
+            self.surf = self.image_left
+        if self.position[-1] == "4":
+            self.rect.move_ip(self.speed, -self.speed)
+            self.surf = self.image_right
+
+
+class Effect(EngineSprite):
+    def __init__(self, owner_center):
+        super().__init__()
+        self.engine.add_to_group(self, "effects")
+        self.surf = pygame.image.load(
+            "images/healing_effect.png"
+        ).convert_alpha()
+        self.lifetime = 300
+        self.explode_range = BOMB_EXPLODE_RANGE
+        self.rect = self.surf.get_rect(
+            center=self.get_self_center(owner_center)
+        )
+
+    def get_self_center(self, owner_center):
+        lines = self.get_line_bomb_placed(owner_center)
+        return (
+            lines[0] * DEFAULT_OBJ_SIZE + self.surf.get_width() // 2,
+            lines[1] * DEFAULT_OBJ_SIZE + self.surf.get_height() // 2,
+        )
+
+    @staticmethod
+    def get_line_bomb_placed(owner_center):
+        width = owner_center[0] // DEFAULT_OBJ_SIZE
+        height = owner_center[1] // DEFAULT_OBJ_SIZE
+        return width, height
+
+    def update(self):
+        self.lifetime -= 1
+        if not self.lifetime:
+            self.kill()
+        self.collisions_handling()
+
+    def collisions_handling(self):
+        player = pygame.sprite.spritecollideany(
+            self, self.engine.groups["player"]
+        )
+        if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
+            self.get_effect(player)
+            self.kill()
+
+    def walls_collide_point(self, point):
+        for sprite in self.engine.groups["walls"].sprites():
+            if sprite.rect.collidepoint(point):
+                return True
+        return False
+
+
+class Heal(Effect):
+    def __init__(self, owner_center):
+        super().__init__(owner_center)
+        self.surf = pygame.image.load(
+            "images/healing_effect.png"
+        ).convert_alpha()
+
+    @staticmethod
+    def get_effect(player):
+        player.health += 20
+
+
+class Slow(Effect):
+    def __init__(self, owner_center):
+        super().__init__(owner_center)
+        self.surf = pygame.image.load("images/slow_effect.png").convert_alpha()
+
+    @staticmethod
+    def get_effect(player):
+        player.speed -= 2
+
+
+class Fast(Effect):
+    def __init__(self, owner_center):
+        super().__init__(owner_center)
+        self.surf = pygame.image.load("images/fast_effect.png").convert_alpha()
+
+    @staticmethod
+    def get_effect(player):
+        player.speed += 2
