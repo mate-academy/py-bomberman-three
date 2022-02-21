@@ -1,10 +1,8 @@
-import random
-
 import pygame
 import abc
 
 from app.config import DEFAULT_ENEMY_TIMEOUT, DEFAULT_EFFECT_TIMEOUT
-from sprites import Spider, Bird, Boar, Healing, Slow, Fast
+from sprites import CreateEnemy, CreateEffect
 
 from mixins import EngineMixin
 
@@ -29,17 +27,7 @@ class AddEnemy(Event):
         self.engine.add_event(self)
 
     def action(self):
-        self.choice_enemy()
-
-    @staticmethod
-    def choice_enemy():
-        chance = random.randint(1, 10)
-        common_enemy = "Spider()"
-        advanced_enemies = ["Bird()", "Boar()"]
-        if chance >= 8:
-            return eval(random.choice(advanced_enemies))
-        else:
-            return eval(common_enemy)
+        CreateEnemy.spawn_random_enemy()
 
 
 class AddEffect(Event):
@@ -52,9 +40,4 @@ class AddEffect(Event):
         self.engine.add_event(self)
 
     def action(self):
-        self.choice_effect()
-
-    @staticmethod
-    def choice_effect():
-        all_effects = ["Healing()", "Slow()", "Fast()"]
-        return eval(random.choice(all_effects))
+        CreateEffect.spawn_random_effect()

@@ -370,6 +370,25 @@ class Rock(EngineSprite):
         return width, height
 
 
+class CreateEnemy(ABC):
+    enemies = {}
+
+    @classmethod
+    def add_enemy(cls, cls_):
+        if cls_ not in cls.enemies:
+            cls.enemies.update({cls_.__name__: cls_})
+
+    @classmethod
+    def spawn_random_enemy(cls):
+        chance = random.randint(1, 10)
+        advanced_enemy = ("Bird", "Boar")
+        if chance >= 9:
+            cls.enemies[random.choice(advanced_enemy)]()
+        else:
+            cls.enemies["Spider"]()
+
+
+@CreateEnemy.add_enemy
 class Spider(Enemy):
     def __init__(self):
         super().__init__()
@@ -390,7 +409,7 @@ class Spider(Enemy):
         self.rect = self.surf.get_rect(center=self.position[:2])
 
     def update(self):
-        super(Spider, self).update()
+        super().update()
 
     def move(self):
         player = self.engine.player
@@ -419,6 +438,7 @@ class Spider(Enemy):
             self.move_collision_out(-self.speed, 0)
 
 
+@CreateEnemy.add_enemy
 class Bird(Enemy):
     def __init__(self):
         super().__init__()
@@ -434,7 +454,7 @@ class Bird(Enemy):
         self.rect = self.surf.get_rect(center=self.position[:2])
 
     def update(self):
-        super(Bird, self).update()
+        super().update()
         if not pygame.sprite.spritecollideany(
                 self, self.engine.groups["walls"]):
             self.i_am_bird()
@@ -475,9 +495,10 @@ class Bird(Enemy):
             self.plant_bomb_cooldown = PLANT_BOMB_COOLDOWN_BIRD
 
 
+@CreateEnemy.add_enemy
 class Boar(Enemy):
     def __init__(self):
-        super(Boar, self).__init__()
+        super().__init__()
         self.image_front = pygame.image.load(
             "images/boar_front.png"
         ).convert_alpha()
@@ -497,7 +518,7 @@ class Boar(Enemy):
         self.rect = self.surf.get_rect(center=self.position[:2])
 
     def update(self):
-        super(Boar, self).update()
+        super().update()
 
         if self.plant_rock_cooldown:
             self.plant_rock_cooldown -= 1
@@ -550,9 +571,24 @@ class Boar(Enemy):
             self.plant_rock_cooldown = PLANT_ROCK_COOLDOWN_BOAR
 
 
-class Healing(Effect):
+class CreateEffect(ABC):
+    enemies = {}
+
+    @classmethod
+    def add_effect(cls, cls_):
+        if cls_ not in cls.enemies:
+            cls.enemies.update({cls_.__name__: cls_})
+
+    @classmethod
+    def spawn_random_effect(cls):
+        all_effects = ("Heal", "Fast", "Slow")
+        cls.enemies[random.choice(all_effects)]()
+
+
+@CreateEffect.add_effect
+class Heal(Effect):
     def __init__(self):
-        super(Healing, self).__init__()
+        super().__init__()
         self.surf = pygame.image.load(
             "images/healing_effect.png"
         ).convert_alpha()
@@ -563,9 +599,10 @@ class Healing(Effect):
             self.engine.player.health += 10
 
 
+@CreateEffect.add_effect
 class Slow(Effect):
     def __init__(self):
-        super(Slow, self).__init__()
+        super().__init__()
         self.surf = pygame.image.load(
             "images/slow_effect.png"
         ).convert_alpha()
@@ -576,9 +613,10 @@ class Slow(Effect):
             self.engine.player.speed -= 1
 
 
+@CreateEffect.add_effect
 class Fast(Effect):
     def __init__(self):
-        super(Fast, self).__init__()
+        super().__init__()
         self.surf = pygame.image.load(
             "images/fast_effect.png"
         ).convert_alpha()
