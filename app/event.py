@@ -33,6 +33,7 @@ class AddEnemy(Event):
 
     @staticmethod
     def choice_enemy():
+        # CreateEnemy.spawn_random_enemy()
         chance = random.randint(1, 10)
         common_enemy = "Spider()"
         advanced_enemies = ["Bird()", "Boar()"]

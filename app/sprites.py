@@ -35,7 +35,7 @@ class Enemy(ABC, EngineMovingSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "enemies")
-        self.engine.add_to_group(self, "____flammable")
+        self.engine.add_to_group(self, "__flammable")
         self.speed = DEFAULT_ENEMY_SPEED
         self.score_points = DEFAULT_SCORE_POINT
 
@@ -370,6 +370,24 @@ class Rock(EngineSprite):
         return width, height
 
 
+# class CreateEnemy(ABC):
+#     enemies = []
+#
+#     @classmethod
+#     def add_enemy(cls, cls_):
+#         def wrapper(*args, **kwargs):
+#             if cls_ not in cls.enemies:
+#                 cls.enemies.append(cls_)
+#
+#         return wrapper
+#
+#     @classmethod
+#     def spawn_random_enemy(cls):
+#         print(cls.enemies)
+#         random.choice(cls.enemies)()
+#
+#
+# @CreateEnemy.add_enemy
 class Spider(Enemy):
     def __init__(self):
         super().__init__()
