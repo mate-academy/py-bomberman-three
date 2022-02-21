@@ -1,4 +1,5 @@
 import pygame
+import random
 
 from collections import defaultdict
 
@@ -8,7 +9,10 @@ from pygame.locals import (
     QUIT,
 )
 
-from config import SCREEN_WIDTH
+from app.config import (
+    ADDENEMY, SCREEN_WIDTH, SCREEN_HEIGHT,
+    DEFAULT_OBJ_SIZE, DEFAULT_EVENT_TIMEOUT
+)
 
 
 def singleton(class_):
@@ -18,6 +22,7 @@ def singleton(class_):
         if class_ not in _instances:
             _instances[class_] = class_(*args, **kwargs)
         return _instances[class_]
+
     return get_instance
 
 
@@ -27,35 +32,33 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
-
-        self.score = 0
+        self.spawner = Spawner()
 
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
-        self.events = dict()
-
-    def add_event(self, event):
-        self.events[event.event_no] = event
+        self.scoreboard = Scoreboard()
 
     def events_handling(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
+            if event.type == ADDENEMY:
+                self.spawner.spawn_enemy()
 
             # Did user click quit button?
             elif event.type == QUIT:
                 self.running = False
-
-            elif event.type in self.events:
-                self.events[event.type].action()
 
     def add_to_group(self, sprite, group):
         self.groups[group].add(sprite)
         self.all_sprites.add(sprite)
 
     def groups_update(self):
-        groups = list(self.groups.values())
+        groups = (
+            [group for name, group in list(self.groups.items())
+             if not name.startswith('__')]
+        )
         for group in groups:
             group.update()
 
@@ -63,18 +66,52 @@ class Engine:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
 
-    def draw_interface(self):
-        font = pygame.font.SysFont("comicsans", 15, True)
-        text = font.render("Score: " + str(self.score), True, (255, 0, 0))
-        self.screen.blit(text, (10, 10))
 
-        player = self.groups["player"].sprites()[0]
+class Spawner:
+    def __init__(self):
+        super(Spawner, self).__init__()
+        pygame.time.set_timer(ADDENEMY, DEFAULT_EVENT_TIMEOUT)
+        self.enemy_pull = {}
+
+    @staticmethod
+    def get_random_position():
+        side = random.randint(0, 1)
+        if side:
+            x = random.randrange(0, SCREEN_WIDTH, DEFAULT_OBJ_SIZE) // 2
+            y = random.choice([0, SCREEN_HEIGHT])
+        else:
+            x = random.choice([0, SCREEN_WIDTH])
+            y = random.randrange(0, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE) // 2
+        return x, y
+
+    def add_enemy_with_spawn_chance_to_pull(self, enemy, chance):
+        self.enemy_pull[chance] = enemy
+
+    def spawn_enemy(self):
+        random_coordinates = self.get_random_position()
+        enemy = random.choices(
+            list(self.enemy_pull.values()),
+            weights=list(self.enemy_pull.keys())
+        )[0]
+        enemy(random_coordinates)
+
+
+class Scoreboard:
+    def __init__(self):
+        self.score = 0
+
+    def draw_interface(self, engine):
+        font = pygame.font.SysFont("comicsans", 15, True)
+        text_score = font.render("Score: " + str(self.score), True, (255, 255, 255))
+        engine.screen.blit(text_score, (10, 10))
+
+        player = engine.groups["player"].sprites()[0]
         text_health = font.render("Health: " + str(player.get_health()),
                                   True, (0, 255, 0))
         text_speed = font.render("Speed: " + str(player.get_speed()),
                                  True, (0, 255, 0))
 
-        self.screen.blit(text_health,
-                         (SCREEN_WIDTH - text_health.get_width() - 10, 10))
-        self.screen.blit(text_speed,
-                         (SCREEN_WIDTH - text_speed.get_width() - 10, 30))
+        engine.screen.blit(text_health,
+                           (SCREEN_WIDTH - text_health.get_width() - 10, 10))
+        engine.screen.blit(text_speed,
+                           (SCREEN_WIDTH - text_speed.get_width() - 10, 30))
