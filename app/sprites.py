@@ -1,7 +1,7 @@
 import random
 import pygame
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from mixins import MovingMixin, EngineMixin
@@ -109,7 +109,6 @@ class Player(EngineMovingSprite):
 
     def get_speed(self):
         return self.speed
-
 
 
 class Wall(EngineSprite):
@@ -251,7 +250,8 @@ class Enemy(EngineMovingSprite, ABC):
         self.speed = 2
         self.position = self.generate_position()
         self.surf = pygame.Surface((10, 10))
-        self.rect = self.surf.get_rect(center=(self.position[0], self.position[1]))
+        self.rect = self.surf.get_rect(center=(self.position[0],
+                                               self.position[1]))
         self.score_points = 10
 
     def collisions_handling(self):
@@ -309,7 +309,8 @@ class Enemy(EngineMovingSprite, ABC):
         return width, height, direction
 
     def effect(self):
-        random.choice((HealEffect(self.rect.center),
+        random.choice((1, 2, 3,
+                       HealEffect(self.rect.center),
                        FastEffect(self.rect.center),
                        SlowEffect(self.rect.center)))
 
@@ -349,7 +350,8 @@ class Boar(Enemy):
         super().__init__()
         self.engine.add_to_group(self, "flammable")
         self.speed = 1
-        self.rect = self.surf.get_rect(center=(self.position[0], self.position[1]))
+        self.rect = self.surf.get_rect(center=(self.position[0],
+                                               self.position[1]))
         self.image_front = pygame.image.load(
             "images/boar_front.png")
         self.image_back = pygame.image.load(
@@ -415,7 +417,8 @@ class Bird(EngineMovingSprite):
         ).convert_alpha()
         self.surf = self.image_left
         self.position = self.generate_position()
-        self.rect = self.surf.get_rect(center=(self.position[0], self.position[1]))
+        self.rect = self.surf.get_rect(center=(self.position[0],
+                                               self.position[1]))
         self.bird_plant_bomb = 300
 
     def update(self):
@@ -438,7 +441,6 @@ class Bird(EngineMovingSprite):
                     self, self.engine.groups["walls"]):
                 Bomb(self.rect.center)
                 self.bird_plant_bomb = 1000
-
 
     @staticmethod
     def generate_position() -> tuple:

@@ -1,6 +1,6 @@
 import pygame
 
-from sprites import Player, Wall, Spider, Boar, Bird, HealingEffect
+from sprites import Player, Wall, Spider, Boar, Bird
 from event import AddEnemy
 from engine import Engine
 from config import (

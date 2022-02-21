@@ -12,7 +12,8 @@ class EngineMixin:
 class MovingMixin:
     def move_collision_out(self, x_speed, y_speed):
         is_on_bomb = self.is_on_bomb if hasattr(self, "is_on_bomb") else False
-        is_on_stone = self.is_on_stone if hasattr(self, "is_on_stone") else False
+        is_on_stone = self.is_on_stone if hasattr(self, "is_on_stone")\
+            else False
         if (pygame.sprite.spritecollideany(
                 self, self.engine.groups["stones"]
         ) and not is_on_stone) or pygame.sprite.spritecollideany(
