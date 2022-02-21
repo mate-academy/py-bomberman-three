@@ -27,9 +27,8 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
-
+        self.player = None
         self.score = 0
-
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
         self.events = dict()
@@ -42,11 +41,8 @@ class Engine:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
-
-            # Did user click quit button?
             elif event.type == QUIT:
                 self.running = False
-
             elif event.type in self.events:
                 self.events[event.type].action()
 
@@ -55,7 +51,7 @@ class Engine:
         self.all_sprites.add(sprite)
 
     def groups_update(self):
-        groups = list(self.groups.values())
+        groups = [v for k, v in self.groups.items() if not k.startswith("__")]
         for group in groups:
             group.update()
 
@@ -68,12 +64,11 @@ class Engine:
         text = font.render("Score: " + str(self.score), True, (255, 0, 0))
         self.screen.blit(text, (10, 10))
 
-        player = self.groups["player"].sprites()[0]
+        player = self.player
         text_health = font.render("Health: " + str(player.get_health()),
                                   True, (0, 255, 0))
         text_speed = font.render("Speed: " + str(player.get_speed()),
                                  True, (0, 255, 0))
-
         self.screen.blit(text_health,
                          (SCREEN_WIDTH - text_health.get_width() - 10, 10))
         self.screen.blit(text_speed,
