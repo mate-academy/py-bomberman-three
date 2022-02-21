@@ -1,7 +1,6 @@
 import pygame
 import abc
 
-from sprites import Enemy
 
 from mixins import EngineMixin
 
@@ -17,13 +16,14 @@ class Event(EngineMixin, abc.ABC):
 
 
 class AddEnemy(Event):
-    def __init__(self, ms_timeout=1000):
+    def __init__(self, ms_timeout, enemy_type):
         super().__init__(ms_timeout)
 
         self.event_no = pygame.USEREVENT + 1
         pygame.USEREVENT = self.event_no
         pygame.time.set_timer(self.event_no, self.ms_timeout)
         self.engine.add_event(self)
+        self.enemy_type = enemy_type
 
     def action(self):
-        Enemy()
+        self.enemy_type()
