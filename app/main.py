@@ -14,7 +14,9 @@ from config import (
 
 pygame.init()
 clock = pygame.time.Clock()
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
 engine = Engine(screen=screen, clock=clock)
 

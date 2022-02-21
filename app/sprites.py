@@ -1,6 +1,6 @@
 import random
 import pygame
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from mixins import MovingMixin, EngineMixin
@@ -175,6 +175,9 @@ class Bomb(EngineSprite):
             self.explode()
 
     def explode(self):
+        explode_sound = pygame.mixer.Sound(
+            "sounds/Bomb-Explosion-Big-www.fesliyanstudios.com.mp3")
+        explode_sound.play()
         fires = [(self.rect.centerx, self.rect.centery)]
 
         width = self.rect.centerx
@@ -304,9 +307,14 @@ class Enemy(EngineMovingSprite):
             player.change_health(-10)
             position_before_death = self.rect
             self.kill()
-            exec(random.choice(["Effect(position_before_death)",
-                                "Fast(position_before_death)",
-                                "Slow(position_before_death)"]))
+
+            option = random.randint(1, 3)
+            if option == 1:
+                Effect(position_before_death)
+            elif option == 2:
+                FastEffect(position_before_death)
+            else:
+                SlowEffect(position_before_death)
 
     def move(self):
         player = self.engine.groups["player"].sprites()[0]
@@ -473,7 +481,8 @@ class Bird(Enemy):
 class Effect(EngineSprite):
     def __init__(self, owner_center):
         super(Effect, self).__init__()
-        self.surf = pygame.image.load("images/healing_effect.png").convert_alpha()
+        self.surf = pygame.image.load(
+            "images/healing_effect.png").convert_alpha()
         self.engine.add_to_group(self, "effects")
         self.rect = self.surf.get_rect(
             center=self.get_self_center(
@@ -508,9 +517,9 @@ class Effect(EngineSprite):
             self.kill()
 
 
-class Fast(Effect):
+class FastEffect(Effect):
     def __init__(self, owner_center):
-        super(Fast, self).__init__(owner_center)
+        super(FastEffect, self).__init__(owner_center)
         self.surf = pygame.image.load("images/fast_effect.png").convert_alpha()
 
     def collisions_handling(self):
@@ -520,9 +529,9 @@ class Fast(Effect):
             self.kill()
 
 
-class Slow(Fast):
+class SlowEffect(Effect):
     def __init__(self, owner_center):
-        super(Slow, self).__init__(owner_center)
+        super(SlowEffect, self).__init__(owner_center)
         self.surf = pygame.image.load("images/slow_effect.png")
 
     def collisions_handling(self):
