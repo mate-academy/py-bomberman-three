@@ -345,13 +345,15 @@ class Enemy(EngineMovingSprite):
         self.engine.score += self.score_points
 
     def some_effect(self):
-        effect = random.choice(["", "", "", "healing", "fast", "slow"])
-        if effect == "healing":
-            HealingEffect(self.rect.center)
-        if effect == "fast":
-            FastEffect(self.rect.center)
-        if effect == "slow":
-            SlowEffect(self.rect.center)
+        small_effect_chance = random.randint(1, 3)
+        if small_effect_chance == 1:
+            effect = random.choice(["healing", "fast", "slow"])
+            if effect == "healing":
+                HealingEffect(self.rect.center)
+            if effect == "fast":
+                FastEffect(self.rect.center)
+            if effect == "slow":
+                SlowEffect(self.rect.center)
 
 
 class Spider(Enemy):
