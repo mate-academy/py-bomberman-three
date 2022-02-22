@@ -439,19 +439,19 @@ class EnemyBoar(Enemy):
             self.surf = self.image_back
             self.rect.move_ip(0, -self.speed)
             if not self.is_on_rock:
-                self.move_collision_out(0, self.speed)
+                self.move_collision_out(0, -self.speed)
         if not x_diff:
             pass
         if x_diff < 0:
             self.surf = self.image_right
             self.rect.move_ip(self.speed, 0)
             if not self.is_on_rock:
-                self.move_collision_out(0, self.speed)
+                self.move_collision_out(-self.speed, 0)
         else:
             self.surf = self.image_left
             self.rect.move_ip(-self.speed, 0)
             if not self.is_on_rock:
-                self.move_collision_out(0, self.speed)
+                self.move_collision_out(self.speed, 0)
 
 
 class Rock(EngineSprite):
