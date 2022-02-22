@@ -1,6 +1,6 @@
 import pygame
 
-from sprites import Player, Wall
+from sprites import Player, Wall, Spider, Boar, Bird
 from event import AddEnemy
 from engine import Engine
 from config import (
@@ -23,8 +23,13 @@ player = Player()
 Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
                     (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
 
-add_enemy = AddEnemy(1000)
-engine.add_event(add_enemy)
+add_enemy_spider = AddEnemy(1000, Spider)
+engine.add_event(add_enemy_spider)
+add_enemy_boar = AddEnemy(3000, Boar)
+engine.add_event(add_enemy_boar)
+add_enemy_bird = AddEnemy(1000, Bird)
+engine.add_event(add_enemy_bird)
+
 
 engine.running = True
 
