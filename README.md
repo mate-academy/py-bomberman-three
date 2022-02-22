@@ -7,7 +7,7 @@
 You already have spiders, that chase the player, 
 bombs, that can explode.
 Now you have to implement such features:
-1. Create an Enemy class hierarchy and add other types of enemies, for example:
+1. Create an Spider class hierarchy and add other types of enemies, for example:
    - Boar, that can drop rocks. All units cannot walk over the rocks, but
    rocks can be destroyed by bombs.
    - Bird, that doesn't chase the player, can fly over the obstacles, can
