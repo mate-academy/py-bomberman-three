@@ -288,6 +288,10 @@ class Enemy(EngineMovingSprite, ABC):
 
         return width, height, direction
 
+    def kill(self) -> None:
+        super().kill()
+        self.engine.score += self.score_points
+
 
 class Spider(Enemy):
     def __init__(self):
@@ -343,10 +347,6 @@ class Spider(Enemy):
             self.surf = self.image_left
             self.rect.move_ip(-self.speed, 0)
             self.move_collision_out(-self.speed, 0)
-
-    def kill(self) -> None:
-        super().kill()
-        self.engine.score += self.score_points
 
 
 class Boar(Enemy):
@@ -424,10 +424,6 @@ class Boar(Enemy):
             self.rect.move_ip(-self.speed, 0)
             self.move_collision_out(-self.speed, 0)
 
-    def kill(self) -> None:
-        super().kill()
-        self.engine.score += self.score_points
-
 
 class Bird(Enemy):
     def __init__(self):
@@ -469,10 +465,6 @@ class Bird(Enemy):
             self.surf = self.image_right
             self.rect.move_ip(-self.speed, -self.speed)
 
-    def kill(self) -> None:
-        super().kill()
-        self.engine.score += self.score_points
-
 
 class Rock(EngineMovingSprite):
     def __init__(self, owner_center):
@@ -505,9 +497,8 @@ class Effect(EngineMovingSprite, ABC):
         self.surf = pygame.Surface((20, 10))
         self.rect = self.surf.get_rect(center=self.position)
 
-    @abstractmethod
     def update(self):
-        pass
+        self.collisions_handling()
 
     @abstractmethod
     def collisions_handling(self):
@@ -527,17 +518,11 @@ class Healing(Effect):
         self.surf = pygame.image.load(
             "images/healing_effect.png").convert_alpha()
 
-    def update(self):
-        self.collisions_handling()
-
     def collisions_handling(self):
         player = self.engine.groups["player"].sprites()[0]
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             player.change_health(200)
             self.kill()
-
-    def kill(self) -> None:
-        super().kill()
 
 
 class Slow(Effect):
@@ -546,17 +531,11 @@ class Slow(Effect):
         self.engine.add_to_group(self, "slows")
         self.surf = pygame.image.load("images/slow_effect.png").convert_alpha()
 
-    def update(self):
-        self.collisions_handling()
-
     def collisions_handling(self):
         player = self.engine.groups["player"].sprites()[0]
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             player.change_speed(-2)
             self.kill()
-
-    def kill(self) -> None:
-        super().kill()
 
 
 class Accelerate(Effect):
@@ -565,14 +544,8 @@ class Accelerate(Effect):
         self.engine.add_to_group(self, "accelerates")
         self.surf = pygame.image.load("images/fast_effect.png").convert_alpha()
 
-    def update(self):
-        self.collisions_handling()
-
     def collisions_handling(self):
         player = self.engine.groups["player"].sprites()[0]
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
             player.change_speed(2)
             self.kill()
-
-    def kill(self) -> None:
-        super().kill()
